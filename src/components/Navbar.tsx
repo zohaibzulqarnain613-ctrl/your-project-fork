@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from '@tanstack/react-router';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { SterlingGateKineticNavigation } from './ui/sterling-gate-kinetic-navigation';
+import { scrollToSection } from '@/utils/scroll-to-section';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -24,22 +25,7 @@ const Navbar: React.FC = () => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
     
-    const targetId = 'contact';
-    const navigateAndScroll = () => {
-      requestAnimationFrame(() => {
-        const element = document.getElementById(targetId);
-        if (element) {
-          const offset = 80;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - offset;
-          
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }
-      });
-    };
+    const navigateAndScroll = () => scrollToSection('contact', 80);
 
     if (location.pathname !== '/') {
       navigate({ to: '/' }).then(() => {
