@@ -86,7 +86,7 @@ const ContactFooter = () => {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0, margin: "0px 0px -10% 0px" }}
           variants={fadeIn}
           className="container grid items-center gap-12 px-4 md:px-6 lg:grid-cols-2 border-t border-white/5 mx-auto max-w-7xl"
         >
@@ -320,7 +320,7 @@ const ContactFooter = () => {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0, margin: "0px 0px -10% 0px" }}
           variants={fadeIn}
           className="container grid gap-12 px-4 py-16 md:px-6 lg:grid-cols-4 mx-auto max-w-7xl"
         >
