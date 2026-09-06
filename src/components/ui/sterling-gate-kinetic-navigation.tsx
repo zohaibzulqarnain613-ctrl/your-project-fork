@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { scrollToSection } from "@/utils/scroll-to-section";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(CustomEase);
@@ -246,26 +247,11 @@ export function SterlingGateKineticNavigation() {
     e.preventDefault();
     closeMenu();
 
-    const targetId = "contact";
-    const navigateAndScroll = () => {
-      requestAnimationFrame(() => {
-        const element = document.getElementById(targetId);
-        if (element) {
-          const offset = 80;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-          });
-        }
-      });
-    };
+    const navigateAndScroll = () => scrollToSection("contact", 80);
 
     if (location.pathname !== "/") {
       navigate({ to: "/" }).then(() => {
-        setTimeout(navigateAndScroll, 100);
+        setTimeout(navigateAndScroll, 150);
       });
     } else {
       navigateAndScroll();
