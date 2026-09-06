@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { Link, useNavigate, useLocation } from "@tanstack/react-router";
@@ -9,13 +10,26 @@ if (typeof window !== "undefined") {
 
 export function SterlingGateKineticNavigation() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const scrollLockY = useRef(0);
+  const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    setMounted(true);
+  }, []);
+
+  // Always close the menu when the route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!overlayRef.current) return;
+
 
     try {
       if (!gsap.parseEase("main")) {
