@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { Link, useNavigate, useLocation } from "@tanstack/react-router";
@@ -9,13 +10,26 @@ if (typeof window !== "undefined") {
 
 export function SterlingGateKineticNavigation() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const scrollLockY = useRef(0);
+  const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    setMounted(true);
+  }, []);
+
+  // Always close the menu when the route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!overlayRef.current) return;
+
 
     try {
       if (!gsap.parseEase("main")) {
@@ -28,8 +42,8 @@ export function SterlingGateKineticNavigation() {
     }
 
     const ctx = gsap.context(() => {
-      const menuItems = containerRef.current!.querySelectorAll(".menu-list-item[data-shape]");
-      const shapesContainer = containerRef.current!.querySelector(".ambient-background-shapes");
+      const menuItems = overlayRef.current!.querySelectorAll(".menu-list-item[data-shape]");
+      const shapesContainer = overlayRef.current!.querySelector(".ambient-background-shapes");
 
       menuItems.forEach((item) => {
         const shapeIndex = item.getAttribute("data-shape");
@@ -87,29 +101,29 @@ export function SterlingGateKineticNavigation() {
           item.removeEventListener("mouseleave", onLeave);
         };
       });
-    }, containerRef);
+    }, overlayRef);
 
     return () => {
       ctx.revert();
-      if (containerRef.current) {
-        const items = containerRef.current.querySelectorAll(".menu-list-item[data-shape]");
+      if (overlayRef.current) {
+        const items = overlayRef.current.querySelectorAll(".menu-list-item[data-shape]");
         items.forEach((item: any) => item._cleanup && item._cleanup());
       }
     };
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!overlayRef.current) return;
 
     const ctx = gsap.context(() => {
-      const navWrap = containerRef.current!.querySelector(".nav-overlay-wrapper");
-      const menu = containerRef.current!.querySelector(".menu-content");
-      const overlay = containerRef.current!.querySelector(".overlay");
-      const bgPanels = containerRef.current!.querySelectorAll(".backdrop-layer");
-      const menuLinks = containerRef.current!.querySelectorAll(".nav-link");
-      const fadeTargets = containerRef.current!.querySelectorAll("[data-menu-fade]");
+      const navWrap = overlayRef.current!;
+      const menu = overlayRef.current!.querySelector(".menu-content");
+      const overlay = overlayRef.current!.querySelector(".overlay");
+      const bgPanels = overlayRef.current!.querySelectorAll(".backdrop-layer");
+      const menuLinks = overlayRef.current!.querySelectorAll(".nav-link");
+      const fadeTargets = overlayRef.current!.querySelectorAll("[data-menu-fade]");
 
-      const menuButton = containerRef.current!.querySelector(".nav-close-btn");
+      const menuButton = containerRef.current?.querySelector(".nav-close-btn");
       const menuButtonTexts = menuButton?.querySelectorAll("p");
       const menuButtonIcon = menuButton?.querySelector(".menu-button-icon");
 
@@ -167,7 +181,6 @@ export function SterlingGateKineticNavigation() {
             "<+=0.2"
           );
         }
-        document.body.style.overflow = "hidden";
       } else {
         if (navWrap) navWrap.setAttribute("data-nav", "closed");
 
@@ -176,15 +189,39 @@ export function SterlingGateKineticNavigation() {
           .to(Array.from(menuButtonTexts || []), { yPercent: 0, force3D: true }, "<")
           .to(menuButtonIcon || [], { rotate: 0, duration: 0.4, force3D: true }, "<");
 
-        document.body.style.overflow = "unset";
       }
-    }, containerRef);
+    }, overlayRef);
 
     return () => {
       ctx.revert();
-      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen, mounted]);
+
+  // Body scroll lock that preserves scroll position
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    scrollLockY.current = window.scrollY;
+    const body = document.body;
+    const prev = {
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    };
+    body.style.position = "fixed";
+    body.style.top = `-${scrollLockY.current}px`;
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+
+    return () => {
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.width = prev.width;
+      body.style.overflow = prev.overflow;
+      window.scrollTo(0, scrollLockY.current);
     };
   }, [isMenuOpen]);
+
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -302,13 +339,15 @@ export function SterlingGateKineticNavigation() {
         </button>
       </div>
 
-      {/* Navigation Overlay */}
+      {/* Navigation Overlay (portalled to body so it is always pinned to the viewport) */}
+      {mounted && createPortal(
       <div
+        ref={overlayRef}
         className="nav-overlay-wrapper fixed inset-0 pointer-events-none"
-        style={{ zIndex: 99999, overflow: "hidden", display: "none" }}
+        style={{ zIndex: 2147483000, overflow: "hidden", display: "none" }}
       >
         <div
-          className="overlay absolute inset-0 bg-gray-950/80 backdrop-blur-xl opacity-0 pointer-events-auto"
+          className="overlay absolute inset-0 bg-gray-950 opacity-0 pointer-events-auto"
           onClick={(e) => {
             e.stopPropagation();
             closeMenu();
@@ -451,7 +490,8 @@ export function SterlingGateKineticNavigation() {
             </div>
           </div>
         </div>
-      </div>
+      </div>,
+      document.body)}
 
       <style>{`
         .nav-overlay-wrapper {
