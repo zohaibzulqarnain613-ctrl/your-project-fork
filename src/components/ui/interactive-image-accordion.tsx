@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { getOptimizedImageUrl, getImageSrcSet } from '@/utils/image-optimization';
-import aiPhoneCallersAsset from '@/assets/ai-phone-callers.jpg.asset.json';
+import aiPhoneCallersAsset from '@/assets/ai-phone-callers.png.asset.json';
 
 const accordionItems = [
   {
     id: 1,
     title: 'AI Phone Callers',
     imageUrl: aiPhoneCallersAsset.url,
+    imageFit: 'contain' as const,
     link: '/services/ai-phone-callers',
   },
   {
