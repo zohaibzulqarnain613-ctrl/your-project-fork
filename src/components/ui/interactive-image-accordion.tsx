@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { getOptimizedImageUrl, getImageSrcSet } from '@/utils/image-optimization';
-import aiPhoneCallersAsset from '@/assets/ai-phone-callers.jpg.asset.json';
+import aiPhoneCallersAsset from '@/assets/ai-phone-callers.png.asset.json';
 
 const accordionItems = [
   {
     id: 1,
     title: 'AI Phone Callers',
     imageUrl: aiPhoneCallersAsset.url,
+    imageFit: 'contain' as const,
     link: '/services/ai-phone-callers',
   },
   {
@@ -63,7 +64,7 @@ const AccordionItem = ({ item, isActive, onMouseEnter, isMobile, index }: { item
       onMouseEnter={onMouseEnter}
       aria-label={item.title}
     >
-      <div className="absolute inset-0 z-0">
+      <div className={`absolute inset-0 z-0 ${item.imageFit === 'contain' ? 'bg-black' : ''}`}>
         <img
           src={getOptimizedImageUrl(item.imageUrl, isActive ? 800 : 400)}
           srcSet={getImageSrcSet(item.imageUrl, [800, 1200, 1600])}
@@ -74,7 +75,7 @@ const AccordionItem = ({ item, isActive, onMouseEnter, isMobile, index }: { item
           loading={index === 0 ? "eager" : "lazy"}
           fetchPriority={index === 0 ? "high" : "auto"}
           decoding={index === 0 ? "sync" : "async"}
-          className="w-full h-full object-cover"
+          className={`w-full h-full ${item.imageFit === 'contain' ? 'object-contain' : 'object-cover'}`}
           width="400"
           height="450"
           onError={(e) => { 
@@ -83,7 +84,7 @@ const AccordionItem = ({ item, isActive, onMouseEnter, isMobile, index }: { item
             target.src = `https://placehold.co/400x450/2d3748/ffffff?text=${encodeURIComponent(item.title)}`; 
           }}
         />
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className={`absolute inset-0 ${item.imageFit === 'contain' ? 'bg-black/10' : 'bg-black/20'}`}></div>
       </div>
       <span
         className={`
