@@ -339,13 +339,15 @@ export function SterlingGateKineticNavigation() {
         </button>
       </div>
 
-      {/* Navigation Overlay */}
+      {/* Navigation Overlay (portalled to body so it is always pinned to the viewport) */}
+      {mounted && createPortal(
       <div
+        ref={overlayRef}
         className="nav-overlay-wrapper fixed inset-0 pointer-events-none"
-        style={{ zIndex: 99999, overflow: "hidden", display: "none" }}
+        style={{ zIndex: 2147483000, overflow: "hidden", display: "none" }}
       >
         <div
-          className="overlay absolute inset-0 bg-gray-950/80 backdrop-blur-xl opacity-0 pointer-events-auto"
+          className="overlay absolute inset-0 bg-gray-950 opacity-0 pointer-events-auto"
           onClick={(e) => {
             e.stopPropagation();
             closeMenu();
@@ -488,7 +490,8 @@ export function SterlingGateKineticNavigation() {
             </div>
           </div>
         </div>
-      </div>
+      </div>,
+      document.body)}
 
       <style>{`
         .nav-overlay-wrapper {
