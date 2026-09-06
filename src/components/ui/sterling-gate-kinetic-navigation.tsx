@@ -42,8 +42,8 @@ export function SterlingGateKineticNavigation() {
     }
 
     const ctx = gsap.context(() => {
-      const menuItems = containerRef.current!.querySelectorAll(".menu-list-item[data-shape]");
-      const shapesContainer = containerRef.current!.querySelector(".ambient-background-shapes");
+      const menuItems = overlayRef.current!.querySelectorAll(".menu-list-item[data-shape]");
+      const shapesContainer = overlayRef.current!.querySelector(".ambient-background-shapes");
 
       menuItems.forEach((item) => {
         const shapeIndex = item.getAttribute("data-shape");
@@ -101,29 +101,29 @@ export function SterlingGateKineticNavigation() {
           item.removeEventListener("mouseleave", onLeave);
         };
       });
-    }, containerRef);
+    }, overlayRef);
 
     return () => {
       ctx.revert();
-      if (containerRef.current) {
-        const items = containerRef.current.querySelectorAll(".menu-list-item[data-shape]");
+      if (overlayRef.current) {
+        const items = overlayRef.current.querySelectorAll(".menu-list-item[data-shape]");
         items.forEach((item: any) => item._cleanup && item._cleanup());
       }
     };
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!overlayRef.current) return;
 
     const ctx = gsap.context(() => {
-      const navWrap = containerRef.current!.querySelector(".nav-overlay-wrapper");
-      const menu = containerRef.current!.querySelector(".menu-content");
-      const overlay = containerRef.current!.querySelector(".overlay");
-      const bgPanels = containerRef.current!.querySelectorAll(".backdrop-layer");
-      const menuLinks = containerRef.current!.querySelectorAll(".nav-link");
-      const fadeTargets = containerRef.current!.querySelectorAll("[data-menu-fade]");
+      const navWrap = overlayRef.current!;
+      const menu = overlayRef.current!.querySelector(".menu-content");
+      const overlay = overlayRef.current!.querySelector(".overlay");
+      const bgPanels = overlayRef.current!.querySelectorAll(".backdrop-layer");
+      const menuLinks = overlayRef.current!.querySelectorAll(".nav-link");
+      const fadeTargets = overlayRef.current!.querySelectorAll("[data-menu-fade]");
 
-      const menuButton = containerRef.current!.querySelector(".nav-close-btn");
+      const menuButton = containerRef.current?.querySelector(".nav-close-btn");
       const menuButtonTexts = menuButton?.querySelectorAll("p");
       const menuButtonIcon = menuButton?.querySelector(".menu-button-icon");
 
@@ -181,7 +181,6 @@ export function SterlingGateKineticNavigation() {
             "<+=0.2"
           );
         }
-        document.body.style.overflow = "hidden";
       } else {
         if (navWrap) navWrap.setAttribute("data-nav", "closed");
 
@@ -190,15 +189,13 @@ export function SterlingGateKineticNavigation() {
           .to(Array.from(menuButtonTexts || []), { yPercent: 0, force3D: true }, "<")
           .to(menuButtonIcon || [], { rotate: 0, duration: 0.4, force3D: true }, "<");
 
-        document.body.style.overflow = "unset";
       }
-    }, containerRef);
+    }, overlayRef);
 
     return () => {
       ctx.revert();
-      document.body.style.overflow = "unset";
     };
-  }, [isMenuOpen]);
+  }, [isMenuOpen, mounted]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
