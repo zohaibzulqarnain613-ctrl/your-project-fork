@@ -1,38 +1,41 @@
 import React, { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { getOptimizedImageUrl, getImageSrcSet } from '@/utils/image-optimization';
-import aiPhoneCallersAsset from '@/assets/ai-phone-callers.png.asset.json';
 
 const accordionItems = [
   {
     id: 1,
     title: 'AI Phone Callers',
-    imageUrl: aiPhoneCallersAsset.url,
+    imageUrl: '/images/services/Ai_phone_callers.jpg',
     imageFit: 'contain' as const,
     link: '/services/ai-phone-callers',
   },
   {
     id: 2,
     title: 'Intelligent AI Chatbots',
-    imageUrl: '/images/a485aafb-cc89-4b59-ae01-069e508b4907.JPG',
+    imageUrl: '/images/services/Ai_Chatbot.jpg',
+    imageFit: 'contain' as const,
     link: '/services/ai-chatbots',
   },
   {
     id: 3,
     title: 'Web Development',
-    imageUrl: '/images/IMG_2418_Original.jpg',
+    imageUrl: '/images/services/Web_Developement.jpg',
+    imageFit: 'contain' as const,
     link: '/services/web-development',
   },
   {
     id: 4,
     title: 'App Development',
-    imageUrl: '/images/8f89c358-8a36-4e02-9c78-dd2c51d3aa42.JPG',
+    imageUrl: '/images/services/App_Developement.jpg',
+    imageFit: 'contain' as const,
     link: '/services/app-development',
   },
   {
     id: 5,
     title: 'Cold Email Dashboards',
-    imageUrl: '/images/IMG_4750.png',
+    imageUrl: '/images/services/Cold_Email_Dashboards.jpg',
+    imageFit: 'contain' as const,
     link: '/services/cold-email-dashboard',
   },
   {
@@ -48,6 +51,7 @@ const accordionItems = [
     link: '/services/digital-marketing',
   },
 ];
+
 
 const AccordionItem = ({ item, isActive, onMouseEnter, isMobile, index }: { item: typeof accordionItems[0], isActive: boolean, onMouseEnter: () => void, isMobile: boolean, index: number }) => {
   return (
